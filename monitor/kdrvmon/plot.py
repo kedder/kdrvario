@@ -5,7 +5,7 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 
 from collections import deque
 
-SAMPLE_SIZE = 200
+SAMPLE_SIZE = 400
 
 class PressureDataPlot(object):
     canvas = None
@@ -41,8 +41,53 @@ class PressureDataPlot(object):
         # redraw the plot
         self.plot.set_xdata(self.data_x)
         self.plot.set_ydata(self.data_y)
-        self.ax.set_ybound(lower=dmin-50, upper=dmax+50)
+        self.ax.set_ybound(lower=dmin-20, upper=dmax+20)
         self.ax.set_xbound(lower=self.data_x[0], upper=self.data_x[-1])
+        self.f.canvas.draw();
+
+    def get_canvas(self):
+        return self.canvas
+
+class PressureDistributionPlot(object):
+    canvas = None
+    data_y = []
+    distr = None
+
+    ax = None
+    plot = None
+    f = None
+
+    def __init__(self):
+        self.data_y = deque()
+        self.distr = {}
+
+        self.f = Figure()
+        self.ax = self.f.add_subplot(111)
+        self.plot, = self.ax.plot([], [], "k-")
+        #self.plot, a, b = self.ax.hist(random.randn(1000))
+        #print self.plot
+        #print a
+        #print b
+
+        self.canvas = FigureCanvas(self.f)
+
+    def on_pressure(self, key, value):
+        pressure = int(value)
+        self.data_y.append(pressure)
+        if len(self.data_y) > 200:
+            removed = self.data_y.popleft()
+
+        ydata, xdata = histogram(self.data_y, bins=10)
+        xdata = xdata[:-1]
+
+        self.plot.set_xdata(xdata)
+        self.plot.set_ydata(ydata)
+
+        ## calculate the boundaries
+        self.ax.set_xbound(lower=min(xdata) - 10, upper=max(xdata) + 10)
+        step = 10
+        self.ax.set_ybound(lower=0, upper=int(max(ydata) / step) * step + step)
+
         self.f.canvas.draw();
 
     def get_canvas(self):

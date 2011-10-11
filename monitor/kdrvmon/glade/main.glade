@@ -58,7 +58,7 @@
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
                 <property name="xpad">12</property>
-                <property name="label" translatable="yes">98456 Pa</property>
+                <property name="label" translatable="yes">-</property>
                 <attributes>
                   <attribute name="scale" value="3"/>
                 </attributes>
@@ -122,7 +122,7 @@
                 <property name="xalign">0</property>
                 <property name="yalign">0</property>
                 <property name="xpad">12</property>
-                <property name="label" translatable="yes">21.5 C</property>
+                <property name="label" translatable="yes">-</property>
                 <attributes>
                   <attribute name="scale" value="3"/>
                 </attributes>
@@ -163,6 +163,38 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label5">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+                <property name="label" translatable="yes">Data rate:</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="datarate">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+                <property name="xpad">12</property>
+                <property name="label" translatable="yes">-</property>
+                <attributes>
+                  <attribute name="scale" value="3"/>
+                </attributes>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">9</property>
               </packing>
             </child>
             <child>

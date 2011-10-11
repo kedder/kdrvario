@@ -29,4 +29,7 @@ class Hardware(object):
         line = self.serial.readline()
         if ":" not in line:
             return (None, None)
-        return line.strip().split(':')
+        items = line.strip().split(':')
+        if len(items) > 2:
+            return (None, None)
+        return items
