@@ -31,12 +31,9 @@ void setup() {
 }
 
 void loop() {
-	log("temp", PressureSensor.readTemperature() / 10.0);
+	log("temp", PressureSensor.readTemperature());
 	log("pressure", PressureSensor.readPressure());
-	digitalWrite(LED, HIGH);   // set the LED on
-	delay(50);              // wait for a second
-	digitalWrite(LED, LOW);    // set the LED off
-	delay(50);
+	//delay(10);
 
 
 	// wait for a second
