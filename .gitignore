@@ -1,5 +1,7 @@
 experiments
 build-cli
 *.py?
-
+tags
+data
+tmp
 *.swp
