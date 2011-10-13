@@ -13,10 +13,11 @@
 
 BMP085 PressureSensor = BMP085(3);
 
+int cnt = 0;
 
 void setup() {                
 	// initialize serial interface
-	Serial.begin(9600);
+	Serial.begin(57600);
 	log("setup", "Initializing...");
 
 	// initialize I2C interface
@@ -31,12 +32,14 @@ void setup() {
 }
 
 void loop() {
-	log("temp", PressureSensor.readTemperature());
+
+	if (cnt == 0) {
+		log("temp", PressureSensor.readTemperature());
+		cnt = 50;
+	}
 	log("pressure", PressureSensor.readPressure());
+	cnt--;
 	//delay(10);
-
-
-	// wait for a second
 }
 
 // vim: ft=cpp
