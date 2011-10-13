@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 from kdrvmon.gui import Gui
-
 
 def main():
     gui = Gui()

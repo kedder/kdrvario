@@ -8,11 +8,11 @@ pygtk.require("2.0")
 
 import gtk
 
-from hardware import Hardware
+from hardware import Hardware, SerialDataFeed, FileDataFeed
 from plot import PressureDataPlot, PressureDistributionPlot
 
 SERIAL_PORT = '/dev/ttyACM0'
-SERIAL_RATE = 9600
+SERIAL_RATE = 57600
 
 class Gui(object):
     builder = None
@@ -37,7 +37,9 @@ class Gui(object):
         self.distribution_plot = PressureDistributionPlot()
 
         # create and connect components
-        self.hardware = Hardware()
+        feed = FileDataFeed('../data/test.out')
+        #feed = SerialDataFeed(SERIAL_PORT, SERIAL_RATE)
+        self.hardware = Hardware(feed)
         self.hardware.listen("temp", self.on_temperature)
         self.hardware.listen("pressure", self.on_raw_pressure)
         self.hardware.listen("pressure", self.pressure_plot.on_pressure)
@@ -55,7 +57,7 @@ class Gui(object):
         #lbl = gtk.Label("Hello")
         #figures.add(lbl)
 
-        self.hardware.open(SERIAL_PORT, SERIAL_RATE)
+        self.hardware.open()
         window.show_all()
         gtk.idle_add(self.on_idle)
         gtk.main()
