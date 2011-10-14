@@ -1,13 +1,14 @@
 import serial
 import time
 
-class Hardware(object):
-    listneres = None
+from event import EventSource
+
+class Hardware(EventSource):
     feed = None
 
     def __init__(self, feed):
+        self.init_listeners()
         self.feed = feed
-        self.listeners = {}
 
     def open(self):
         self.feed.open()
@@ -17,16 +18,8 @@ class Hardware(object):
         key, value = self.read_serial()
         if key is None:
             return
-        if key not in self.listeners:
-            return
 
-        for listener in self.listeners[key]:
-            listener(key, value)
-
-    def listen(self, key, listener):
-        if key not in self.listeners:
-            self.listeners[key] = []
-        self.listeners[key].append(listener)
+        self.emit(key, value)
 
     def read_serial(self):
         line = self.feed.next()

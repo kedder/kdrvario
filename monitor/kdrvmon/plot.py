@@ -5,7 +5,7 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 
 from collections import deque
 
-SAMPLE_SIZE = 400
+SAMPLE_SIZE = 300
 
 class PressureDataPlot(object):
     canvas = None
@@ -19,10 +19,12 @@ class PressureDataPlot(object):
     def __init__(self):
         self.data_y = deque([None] * SAMPLE_SIZE)
         self.data_x = deque(range(-SAMPLE_SIZE, 0))
+        self.filtered = deque([None] * SAMPLE_SIZE)
 
         self.f = Figure()
         self.ax = self.f.add_subplot(111)
         self.plot, = self.ax.plot(self.data_x, self.data_y, "k+")
+        self.fplot, = self.ax.plot(self.data_x, self.filtered, "b-")
 
         self.canvas = FigureCanvas(self.f)
 
@@ -36,13 +38,21 @@ class PressureDataPlot(object):
 
         # calculate the boundaries
         dmax = max(self.data_y)
-        dmin = min(self.data_y) or dmax
+        dmin = min([x for x in self.data_y if x]) or dmax
 
         # redraw the plot
         self.plot.set_xdata(self.data_x)
         self.plot.set_ydata(self.data_y)
         self.ax.set_ybound(lower=dmin-20, upper=dmax+20)
         self.ax.set_xbound(lower=self.data_x[0], upper=self.data_x[-1])
+        self.f.canvas.draw();
+
+    def on_filtered_pressure(self, key, value):
+        self.filtered.popleft()
+        self.filtered.append(value)
+
+        self.fplot.set_xdata(self.data_x)
+        self.fplot.set_ydata(self.filtered)
         self.f.canvas.draw();
 
     def get_canvas(self):

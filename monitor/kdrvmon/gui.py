@@ -8,22 +8,22 @@ pygtk.require("2.0")
 
 import gtk
 
-from hardware import Hardware, SerialDataFeed, FileDataFeed
+from hardware import Hardware
 from plot import PressureDataPlot, PressureDistributionPlot
-
-SERIAL_PORT = '/dev/ttyACM0'
-SERIAL_RATE = 57600
+from filter import MovingAverageFilter
+from vario import Vario
 
 class Gui(object):
     builder = None
     hardware = None
+    vario = None
 
     datarate = None
 
     pressure_plot = None
     distribution_plot = None
 
-    def __init__(self):
+    def __init__(self, feed):
         # load gui
         thisdir = os.path.dirname(__file__)
         gladefile = os.path.join(thisdir, "glade/main.glade")
@@ -33,17 +33,26 @@ class Gui(object):
 
         self.datarate = DataRateAnalizer()
 
-        self.pressure_plot = PressureDataPlot()
-        self.distribution_plot = PressureDistributionPlot()
-
         # create and connect components
-        feed = FileDataFeed('../data/test.out')
-        #feed = SerialDataFeed(SERIAL_PORT, SERIAL_RATE)
         self.hardware = Hardware(feed)
+        self.pressure_plot = PressureDataPlot()
+
+        self.hardware.listen("pressure", self.pressure_plot.on_pressure)
+
+        self.distribution_plot = PressureDistributionPlot()
+        self.hardware.listen("pressure", self.distribution_plot.on_pressure)
+
+        self.filter = MovingAverageFilter(40)
+        self.hardware.listen("pressure", lambda k, v: self.filter.accept(int(v)))
+        self.filter.listen("filtered", self.pressure_plot.on_filtered_pressure)
+
         self.hardware.listen("temp", self.on_temperature)
         self.hardware.listen("pressure", self.on_raw_pressure)
-        self.hardware.listen("pressure", self.pressure_plot.on_pressure)
-        self.hardware.listen("pressure", self.distribution_plot.on_pressure)
+        self.filter.listen("filtered", self.on_filtered_pressure)
+
+        self.vario = Vario()
+        self.filter.listen("filtered", self.vario.on_pressure)
+        self.vario.listen("vario", self.on_vario)
 
     def run(self):
         window = self.builder.get_object('main_window')
@@ -52,7 +61,7 @@ class Gui(object):
 
         figures = self.builder.get_object('figures')
         figures.add(self.pressure_plot.get_canvas())
-        figures.add(self.distribution_plot.get_canvas())
+        #figures.add(self.distribution_plot.get_canvas())
 
         #lbl = gtk.Label("Hello")
         #figures.add(lbl)
@@ -63,17 +72,26 @@ class Gui(object):
         gtk.main()
 
     def on_temperature(self, key, value):
-        lbl = self.builder.get_object('temperature')
-        lbl.set_text("%s °C" % (float(value) / 10))
+        self.set_label('temperature', "%s °C" % (float(value) / 10))
 
     def on_raw_pressure(self, key, value):
-        lbl = self.builder.get_object('raw_pressure')
-        lbl.set_text("%.2f hPa" % (float(value) / 100.0))
+        raw_pressure = int(value)
+
+        self.set_label('raw_pressure', self.format_pressure(raw_pressure))
 
         self.datarate.tick()
         if self.datarate.rate:
             lbl = self.builder.get_object('datarate')
             lbl.set_text("%.2f Hz" % (self.datarate.rate))
+
+    def on_filtered_pressure(self, key, pressure):
+        self.set_label('filtered_pressure', self.format_pressure(pressure))
+
+        alt = self.vario.pressure_to_alt(pressure)
+        self.set_label("altitude", "%.2f m" % alt)
+
+    def on_vario(self, key, vario):
+        self.set_label("vario", "%s%.1f m/s" % (vario >= 0 and '↑' or '↓', abs(vario)))
 
     def on_idle(self):
         self.hardware.read()
@@ -83,8 +101,14 @@ class Gui(object):
     def on_main_window_destroy(self, widget, data=None):
         gtk.main_quit()
 
+    def format_pressure(self, pressure):
+        return  "%.2f hPa" % (float(pressure) / 100.0)
     def quit(self, widget):
 		sys.exit(0)
+
+    def set_label(self, id, value):
+        lbl = self.builder.get_object(id)
+        lbl.set_text(value)
 
 class DataRateAnalizer(object):
     lasttime = 0
@@ -103,3 +127,4 @@ class DataRateAnalizer(object):
             now = time()
             self.rate = self.samplesize / (now - self.lasttime)
             self.lasttime = now
+
