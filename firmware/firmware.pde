@@ -35,11 +35,11 @@ void loop() {
 
 	if (cnt == 0) {
 		log("temp", PressureSensor.readTemperature());
-		cnt = 50;
+		cnt = 1;
 	}
 	log("pressure", PressureSensor.readPressure());
 	cnt--;
-	//delay(10);
+	delay(30);
 }
 
 // vim: ft=cpp
