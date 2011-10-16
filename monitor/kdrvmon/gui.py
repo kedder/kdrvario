@@ -10,7 +10,7 @@ import gtk
 
 from hardware import Hardware
 from plot import PressureDataPlot, PressureDistributionPlot
-from filter import MovingAverageFilter
+from filter import MovingAverageFilter, UnpredictingKalman
 from vario import Vario
 
 class Gui(object):
@@ -42,7 +42,8 @@ class Gui(object):
         #self.distribution_plot = PressureDistributionPlot()
         #self.hardware.listen("pressure", self.distribution_plot.on_pressure)
 
-        self.filter = MovingAverageFilter(40)
+        #self.filter = MovingAverageFilter(40)
+        self.filter = UnpredictingKalman(1e-3, 0.3)
         self.hardware.listen("pressure", lambda k, v: self.filter.accept(int(v)))
         self.filter.listen("filtered", self.pressure_plot.on_filtered_pressure)
 
