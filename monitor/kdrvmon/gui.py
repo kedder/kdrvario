@@ -39,8 +39,8 @@ class Gui(object):
 
         self.hardware.listen("pressure", self.pressure_plot.on_pressure)
 
-        self.distribution_plot = PressureDistributionPlot()
-        self.hardware.listen("pressure", self.distribution_plot.on_pressure)
+        #self.distribution_plot = PressureDistributionPlot()
+        #self.hardware.listen("pressure", self.distribution_plot.on_pressure)
 
         self.filter = MovingAverageFilter(40)
         self.hardware.listen("pressure", lambda k, v: self.filter.accept(int(v)))
