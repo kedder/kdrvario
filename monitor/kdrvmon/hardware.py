@@ -40,7 +40,7 @@ class SerialDataFeed(object):
         self.rate = rate
 
     def open(self):
-        self.serial = serial.Serial(self.device, self.rate)
+        self.serial = serial.Serial(self.device, self.rate, timeout=2)
 
     def next(self):
         return self.serial.readline().strip()
