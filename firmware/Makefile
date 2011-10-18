@@ -34,3 +34,9 @@ debug:
 $(TARGET_ELF): 	$(OBJS)
 		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS)
 
+# firmware switch targets
+fw_switch_pressure_log: clean
+	ln -sf pde/pressure_log.pde firmware.pde
+
+fw_switch_sound_check: clean
+	ln -sf pde/sound_check.pde firmware.pde
