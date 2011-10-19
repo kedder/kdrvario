@@ -2,10 +2,18 @@
 
 #include "vario.h"
 #include "sound.h"
+#include "log.h"
 //#include "wiring.h"
 
 
 #define SOUND_PIN 11
+
+#define MIN_DURATION 30
+#define MAX_DURATION 300
+#define INF_DURATION -1
+
+// Maximum vertical speed supported (in cm/s)
+#define MAX_VSPEED 500
 
 Sound::Sound(Vario *vario) {
 	_vario = vario;
@@ -14,11 +22,33 @@ Sound::Sound(Vario *vario) {
 }
 
 int Sound::calc_pitch(int vspeed) {
-	return 440;
+	log("vspeed", vspeed);
+	unsigned long pitch;
+	if (vspeed > MAX_VSPEED) {
+		vspeed = MAX_VSPEED;
+	}
+	if (vspeed < -MAX_VSPEED) {
+		vspeed = -MAX_VSPEED;
+	}
+	vspeed = vspeed + MAX_VSPEED;
+	pitch = ((long) vspeed * (long) vspeed * (long)vspeed);
+	log("cubed", pitch);
+	pitch = pitch >> 19; 
+	pitch += 80;
+	log("pitch", pitch);
+	return pitch;
 }
 
 int Sound::calc_duration(int vspeed) {
-	return 100;
+	if (vspeed <= 0) {
+		return INF_DURATION;
+	}
+	if (vspeed > MAX_VSPEED) {
+		vspeed = MAX_VSPEED;
+	}
+	int duration = map(vspeed, 0, MAX_VSPEED, MAX_DURATION, MIN_DURATION);
+	//log("duration", duration);
+	return duration;
 }
 
 void Sound::start() {
