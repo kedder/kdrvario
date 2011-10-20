@@ -8,6 +8,7 @@ class Sound {
 		Vario *_vario;
 		unsigned long _tonestart;
 		bool _silent;
+		bool _enabled;
 
 		int calc_pitch(int vspeed);
 		int calc_duration(int vspeed);
