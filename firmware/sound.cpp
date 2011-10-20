@@ -15,8 +15,8 @@
 // Maximum vertical speed supported (in cm/s)
 #define MAX_VSPEED 500
 
-#define MIN_PITCH = 20
-#define ZERO_PITCH = 220
+#define MIN_PITCH 20
+#define ZERO_PITCH 220
 #define MAX_PITCH 1500
 
 Sound::Sound(Vario *vario) {
