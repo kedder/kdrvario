@@ -45,6 +45,9 @@ class SerialDataFeed(object):
     def next(self):
         return self.serial.readline().strip()
 
+    def write(self, data):
+        return self.serial.write(data)
+
 class FileDataFeed(object):
     fname = None
     lastts = 0
