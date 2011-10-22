@@ -6,7 +6,7 @@
 
 class BMP085 {
 	private:
-		int _mode;
+		int8_t _mode;
 		
 		// Calibration values
 		int ac1;
@@ -33,7 +33,7 @@ class BMP085 {
 		long compensatePressure(unsigned long up);
 
 	public:
-		BMP085(int mode);
+		BMP085(int8_t mode);
 		void begin();
 		long readTemperature();
 		long readPressure();

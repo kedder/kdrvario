@@ -10,7 +10,7 @@
 /*
  * Public members
  */
-BMP085::BMP085(int mode) {
+BMP085::BMP085(int8_t mode) {
 	_mode = mode;
 }
 
