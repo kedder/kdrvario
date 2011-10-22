@@ -23,6 +23,8 @@ class Hardware(EventSource):
 
     def read_serial(self):
         line = self.feed.next()
+        if not line:
+            return (None, None)
         if ":" not in line:
             return (None, None)
         items = line.strip().split(':')
@@ -52,6 +54,8 @@ class FileDataFeed(object):
     fname = None
     lastts = 0
     lastout = 0
+    realtime = True
+    autorewind = True
 
     def __init__(self, fname):
         self.fname = fname
@@ -63,9 +67,12 @@ class FileDataFeed(object):
     def next(self):
         line = self.f.readline().strip()
         if not line:
-            print "EOF reached. rewinding."
-            self.open()
-            return self.next()
+            if self.autorewind:
+                print "EOF reached. rewinding."
+                self.open()
+                return self.next()
+            else:
+                return None
         ts, rec = line.split(':', 1)
 
         ts = float(ts)
@@ -78,7 +85,7 @@ class FileDataFeed(object):
 
         signaldelay = ts - self.lastts
         processtime = now - self.lastout
-        if signaldelay > processtime:
+        if self.realtime and signaldelay > processtime:
             time.sleep(signaldelay - processtime)
 
         self.lastts = ts

@@ -40,7 +40,7 @@ class UnpredictingKalman(Filter):
 
     def filter(self, value):
         # time update
-        self.last_estimate = self.estimate;
+        self.last_estimate = self.estimate
         self.last_error = self.error + self.process_var
 
         # measurement update
@@ -48,5 +48,5 @@ class UnpredictingKalman(Filter):
         self.estimate = self.last_estimate + self.gain * (value - self.last_estimate)
         self.error = (1 - self.gain) * self.last_error
 
-        #print self.last_estimate, self.gain, self.last_error, self.error
+        #print "\t".join([str(x) for x in [self.last_estimate, self.gain, self.last_error, self.error]])
         return self.last_estimate;

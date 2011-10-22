@@ -43,7 +43,7 @@ class Gui(object):
         #self.hardware.listen("pressure", self.distribution_plot.on_pressure)
 
         #self.filter = MovingAverageFilter(40)
-        self.filter = UnpredictingKalman(1e-3, 0.3)
+        self.filter = UnpredictingKalman(1e-2, 5)
         self.hardware.listen("pressure", lambda k, v: self.filter.accept(int(v)))
         self.filter.listen("filtered", self.pressure_plot.on_filtered_pressure)
 
