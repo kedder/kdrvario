@@ -40,3 +40,6 @@ fw_switch_pressure_log: clean
 
 fw_switch_sound_check: clean
 	ln -sf pde/sound_check.pde firmware.pde
+
+fw_switch_stats: clean
+	ln -sf pde/stats.pde firmware.pde
