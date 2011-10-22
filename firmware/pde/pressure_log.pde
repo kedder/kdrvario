@@ -30,7 +30,7 @@ void loop() {
 
 	if (cnt == 0) {
 		log("temp", PressureSensor.readTemperature());
-		cnt = 1;
+		cnt = 4;
 	}
 	log("pressure", PressureSensor.readPressure());
 	cnt--;
