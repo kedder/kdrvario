@@ -6,14 +6,15 @@
 #include "vario.h"
 
 
-#define BUFSIZE 10
+#define BUFSIZE 200
 
-BMP085 PressureSensor = BMP085(0);
+BMP085 PressureSensor = BMP085(3);
 
 long readings[BUFSIZE];
 
 long average();
 float stdev(long mean);
+float variance(long mean);
 
 void setup() {                
 	// initialize serial interface
@@ -36,7 +37,7 @@ void loop() {
 	unsigned long start = millis();
 	for (int i = 0; i < BUFSIZE; i++) {
 		readings[i] = PressureSensor.readPressure();
-		//delay(100);
+		delay(20);
 	}
 	unsigned long end = millis();
 
@@ -47,6 +48,8 @@ void loop() {
 	log("pressure", avg);
 	float rms = stdev(avg);
 	log("stdev", rms);
+	float var = variance(avg);
+	log("variance", var);
 }
 
 long average() {
@@ -65,6 +68,15 @@ float stdev(long mean) {
 		sum += value * value;
 	}
 	return sqrt(sum / BUFSIZE);
+}
+
+float variance(long mean) {
+	long sum = 0;
+	for (int i = 0; i < BUFSIZE; i++) {
+		int value = readings[i] - mean;
+		sum += value * value;
+	}
+	return sum / (float)BUFSIZE;
 }
 
 // vim: ft=cpp
