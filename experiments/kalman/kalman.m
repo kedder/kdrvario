@@ -95,6 +95,25 @@ function filtered = test_movavg(data, sz)
 	endfor
 endfunction
 
+function filtered = test_alphabeta(data, dt, a, b, x0)
+	x = xminus = x0;
+	v = vminus = 0;
+	filtered = [];
+	for xm = data'
+		x = xminus + vminus * dt;
+		v = vminus;
+
+		r = xm - x;
+        x += a * r;
+		v += b * r / dt;
+
+		xminus = x;
+		vminus = v;
+
+		filtered = [filtered; x v];
+	endfor
+endfunction
+
 % Load data
 % load altchange.mat
 load data.mat
@@ -114,7 +133,8 @@ x0 = mean(data)
 % perform tests
 k2d = test_kalman_2d(data, dt, q, r, x0);
 k1d = test_kalman_1d(data, dt, q, r, x0);
-movavg = test_movavg(data, 1/dt);
+movavg = test_movavg(data, 2.7/dt);	
+ab = test_alphabeta(data, dt, 0.08, 0.0033, x0);
 
 % add average velocity
 k1d = with_average_velocity(k1d, 1/dt, dt);
@@ -136,14 +156,22 @@ figure(1, 'position',[0, 0, 1000, 650]);
 plot(timeline, data, '0+;data;', 
 	 timeline, k2d(:,1), '1-;kalman 2d;', 
 	 %timeline, k2d(:,2), '1-', 
-	 timeline, k1d(:,1), '2-;kalman 1d;',
+	 %timeline, k1d(:,1), '2-;kalman 1d;',
+	 timeline, ab(:,1), '2-;alpha-beta;',
 	 timeline, movavg(:,1), '3-;moving avg;');
 grid();
+xlabel("Time (s)");
+ylabel("Altitude (m)");
+title("Altitude estimation");
 
 %subplot(2,1,2)
 figure(2);
 plot(timeline, k2d(:,2), '1-;kalman 2d;',
-	 timeline, k1d(:,2), '2-;kalman 1d;',
+	 %timeline, k1d(:,2), '2-;kalman 1d;',
+	 timeline, ab(:,2), '2-;alpha-beta;',
 	 timeline, movavg(:,2), '3-;moving avg;');
 grid();
+xlabel("Time (s)")
+ylabel("Vertical speed (m/s)");
+title("Vertical speed estimation")
 pause;
