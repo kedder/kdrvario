@@ -19,14 +19,6 @@ function flt = kalman (flt, z)
 	flt.P = (flt.I - (K * flt.H)) * Pminus;
 endfunction
 
-function filtered = filter_with_kalman(flt, data)
-	filtered = [];
-	for z = data'
-		flt = kalman(flt, z);
-		filtered = [filtered; flt.xhat']; % flt.xhat(2)];
-	endfor
-endfunction
-
 function alt = pressure_to_alt(pressure)
 	STD_PRESSURE = 101325;
 	if (isscalar(pressure))
@@ -67,19 +59,11 @@ function filtered = test_kalman_2d(data, dt, q, r, x0)
 	P = Q * 100;
 
 	flt = make_kalman(Q, R, A, H, xhat, P);
-	filtered = filter_with_kalman(flt, data);
-endfunction
-
-function filtered = test_kalman_1d(data, dt, q, r, x0)
-	Q = dt^2 / 2 * q;
-	R = r;
-	A = 1;
-	H = 1;
-	xhat = x0;
-	P = Q;
-
-	flt = make_kalman(Q, R, A, H, xhat, P);
-	filtered = filter_with_kalman(flt, data);
+	filtered = [];
+	for z = data'
+		flt = kalman(flt, z);
+		filtered = [filtered; flt.xhat'];
+	endfor
 endfunction
 
 function filtered = test_movavg(data, sz)
@@ -114,13 +98,11 @@ function filtered = test_alphabeta(data, dt, a, b, x0)
 	endfor
 endfunction
 
-% Load data
-% load altchange.mat
+% Load data and dt variables
 load data.mat
 datarate = 1/dt
 
 %data = normal_rnd(mean(data), var(data), rows(data), 1);
-
 
 data = pressure_to_alt(data);
 % Basic filter for KDR vario sampled data
@@ -132,44 +114,36 @@ x0 = mean(data)
 
 % perform tests
 k2d = test_kalman_2d(data, dt, q, r, x0);
-k1d = test_kalman_1d(data, dt, q, r, x0);
-movavg = test_movavg(data, 2.7/dt);	
+movavg = test_movavg(data, 1/dt);	
 ab = test_alphabeta(data, dt, 0.08, 0.0033, x0);
 
 % add average velocity
-k1d = with_average_velocity(k1d, 1/dt, dt);
-movavg = with_average_velocity(movavg, 1/dt, dt);
-
-% plot data
-timeline = (0:rows(data)-1)' * dt;
-
+movavg = with_average_velocity(movavg, 3/dt, dt);
 
 % display statistics
 disp("Data variance"), disp(var(data))
 disp("Variance kalman 2d"), disp(var(k2d))
-disp("Variance kalman 1d"), disp(var(k1d))
 disp("Variance moving average"), disp(var(movavg))
 
-%subplot(2,1,1)
+% plot
+timeline = (0:rows(data)-1)' * dt;
 
 figure(1, 'position',[0, 0, 1000, 650]);
 plot(timeline, data, '0+;data;', 
+	 timeline, movavg(:,1), '3-;moving avg;',
 	 timeline, k2d(:,1), '1-;kalman 2d;', 
-	 %timeline, k2d(:,2), '1-', 
-	 %timeline, k1d(:,1), '2-;kalman 1d;',
-	 timeline, ab(:,1), '2-;alpha-beta;',
-	 timeline, movavg(:,1), '3-;moving avg;');
+	 timeline, ab(:,1), '2-;alpha-beta;'
+	 );
 grid();
 xlabel("Time (s)");
 ylabel("Altitude (m)");
 title("Altitude estimation");
 
-%subplot(2,1,2)
-figure(2);
-plot(timeline, k2d(:,2), '1-;kalman 2d;',
-	 %timeline, k1d(:,2), '2-;kalman 1d;',
-	 timeline, ab(:,2), '2-;alpha-beta;',
-	 timeline, movavg(:,2), '3-;moving avg;');
+figure(2, 'position',[0, 0, 1000, 650]);
+plot(timeline, movavg(:,2), '3-;moving avg;',
+	 timeline, k2d(:,2), '1-;kalman 2d;',
+	 timeline, ab(:,2), '2-;alpha-beta;'
+	 );
 grid();
 xlabel("Time (s)")
 ylabel("Vertical speed (m/s)");
