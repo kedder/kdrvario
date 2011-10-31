@@ -15,6 +15,7 @@ function flt = kalman (flt, z)
 	Pminus = flt.A * flt.P * flt.A' + flt.Q;
 
 	K = Pminus * flt.H' * ( flt.H * Pminus * flt.H' + flt.R )^-1;
+	K
 	flt.xhat = flt.xhatminus + K * (z - flt.H * flt.xhatminus);
 	flt.P = (flt.I - (K * flt.H)) * Pminus;
 endfunction
@@ -115,7 +116,7 @@ x0 = mean(data)
 % perform tests
 k2d = test_kalman_2d(data, dt, q, r, x0);
 movavg = test_movavg(data, 1/dt);	
-ab = test_alphabeta(data, dt, 0.08, 0.0033, x0);
+ab = test_alphabeta(data, dt, 1.2923*dt, 0.86411 * dt ^ 2, x0);
 
 % add average velocity
 movavg = with_average_velocity(movavg, 2.5/dt, dt);
