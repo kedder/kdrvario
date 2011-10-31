@@ -118,7 +118,7 @@ movavg = test_movavg(data, 1/dt);
 ab = test_alphabeta(data, dt, 0.08, 0.0033, x0);
 
 % add average velocity
-movavg = with_average_velocity(movavg, 3/dt, dt);
+movavg = with_average_velocity(movavg, 2.5/dt, dt);
 
 % display statistics
 disp("Data variance"), disp(var(data))
@@ -129,9 +129,9 @@ disp("Variance moving average"), disp(var(movavg))
 timeline = (0:rows(data)-1)' * dt;
 
 figure(1, 'position',[0, 0, 1000, 650]);
-plot(timeline, data, '0+;data;', 
+plot(timeline, data, '0+;data;',
 	 timeline, movavg(:,1), '3-;moving avg;',
-	 timeline, k2d(:,1), '1-;kalman 2d;', 
+	 timeline, k2d(:,1), '1-;kalman 2d;',
 	 timeline, ab(:,1), '2-;alpha-beta;'
 	 );
 grid();
