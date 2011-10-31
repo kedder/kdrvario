@@ -1,4 +1,6 @@
 from collections import deque
+from time import time
+
 from event import EventSource
 
 class Filter(EventSource):
@@ -50,3 +52,47 @@ class UnpredictingKalman(Filter):
 
         #print "\t".join([str(x) for x in [self.last_estimate, self.gain, self.last_error, self.error]])
         return self.last_estimate;
+
+
+class AlphaBeta(Filter):
+    a = 0;
+    b = 0;
+    lastpos = 0;
+    lastvel = 0;
+
+    lastts = 0;
+
+    def __init__(self, a, b):
+        super(AlphaBeta, self).__init__()
+        self.a = a;
+        self.b = b;
+
+    def filter(self, value):
+        now = time()
+        if not self.lastts:
+            self.lastts = now
+            self.lastpos = value;
+            return self.lastpos;
+
+        dt = now - self.lastts
+        self.lastts = now
+
+        alpha = self.a * dt
+        beta = self.b * dt**2
+
+        pos = self.lastpos + self.lastvel * dt
+        vel = self.lastvel
+
+        r = value - pos
+
+        pos += alpha * r
+        vel += beta * r/dt
+
+        self.lastpos = pos
+        self.lastvel = vel
+
+        self.emit('velocity', vel)
+        return pos
+
+
+

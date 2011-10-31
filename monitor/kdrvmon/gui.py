@@ -10,7 +10,7 @@ import gtk
 
 from hardware import Hardware
 from plot import DataPlot, DistributionPlot
-from filter import MovingAverageFilter, UnpredictingKalman
+from filter import MovingAverageFilter, UnpredictingKalman, AlphaBeta
 from vario import Vario
 
 class Gui(object):
@@ -37,7 +37,9 @@ class Gui(object):
         self.hardware = Hardware(feed)
         self.pressure_plot = DataPlot()
         self.vario = Vario()
-        self.filter = UnpredictingKalman(0.004, 0.5)
+
+        self.filter = AlphaBeta(1.2923, 0.86411);
+        #self.filter = UnpredictingKalman(0.004, 0.5)
 
         self.hardware.listen("pressure", self.vario.on_pressure)
         self.vario.listen("altitude", self.pressure_plot.on_raw_data)
@@ -52,9 +54,9 @@ class Gui(object):
 
         self.hardware.listen("temp", self.on_temperature)
         self.hardware.listen("pressure", self.on_raw_pressure)
+        self.vario.listen("altitude", self.on_altitude)
         self.filter.listen("filtered", self.on_filtered)
-
-        #self.vario.listen("vario", self.on_vario)
+        self.filter.listen("velocity", self.on_vario)
 
     def run(self):
         window = self.builder.get_object('main_window')
@@ -90,6 +92,9 @@ class Gui(object):
         #self.set_label('filtered_pressure', self.format_pressure(pressure))
         #alt = self.vario.pressure_to_alt(pressure)
         self.set_label("altitude", "%.2f m" % altitude)
+
+    def on_altitude(self, key, altitude):
+        self.set_label('raw_altitude', "%.2fm" % altitude)
 
     def on_vario(self, key, vario):
         self.set_label("vario", "%s%.1f m/s" % (vario >= 0 and '↑' or '↓', abs(vario)))
