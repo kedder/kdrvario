@@ -32,7 +32,7 @@ class UnpredictingKalman(Filter):
         self.process_var = process_var
         self.measure_var = measure_var
 
-        self.estimate = 100000.0
+        self.estimate = 0.0
         self.error = 1.0
         self.last_estimate = 0.0
         self.last_error = 0.0

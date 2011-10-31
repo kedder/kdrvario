@@ -9,7 +9,7 @@ pygtk.require("2.0")
 import gtk
 
 from hardware import Hardware
-from plot import PressureDataPlot, PressureDistributionPlot
+from plot import DataPlot, DistributionPlot
 from filter import MovingAverageFilter, UnpredictingKalman
 from vario import Vario
 
@@ -35,25 +35,26 @@ class Gui(object):
 
         # create and connect components
         self.hardware = Hardware(feed)
-        self.pressure_plot = PressureDataPlot()
+        self.pressure_plot = DataPlot()
+        self.vario = Vario()
+        self.filter = UnpredictingKalman(0.004, 0.5)
 
-        self.hardware.listen("pressure", self.pressure_plot.on_pressure)
+        self.hardware.listen("pressure", self.vario.on_pressure)
+        self.vario.listen("altitude", self.pressure_plot.on_raw_data)
+
 
         #self.distribution_plot = PressureDistributionPlot()
-        #self.hardware.listen("pressure", self.distribution_plot.on_pressure)
+        #self.hardware.listen("pressure", self.distribution_plot.on_raw_data)
 
         #self.filter = MovingAverageFilter(40)
-        self.filter = UnpredictingKalman(1e-2, 5)
-        self.hardware.listen("pressure", lambda k, v: self.filter.accept(int(v)))
-        self.filter.listen("filtered", self.pressure_plot.on_filtered_pressure)
+        self.vario.listen("altitude", lambda k, v: self.filter.accept(v))
+        self.filter.listen("filtered", self.pressure_plot.on_filtered_data)
 
         self.hardware.listen("temp", self.on_temperature)
         self.hardware.listen("pressure", self.on_raw_pressure)
-        self.filter.listen("filtered", self.on_filtered_pressure)
+        self.filter.listen("filtered", self.on_filtered)
 
-        self.vario = Vario()
-        self.filter.listen("filtered", self.vario.on_pressure)
-        self.vario.listen("vario", self.on_vario)
+        #self.vario.listen("vario", self.on_vario)
 
     def run(self):
         window = self.builder.get_object('main_window')
@@ -85,11 +86,10 @@ class Gui(object):
             lbl = self.builder.get_object('datarate')
             lbl.set_text("%.2f Hz" % (self.datarate.rate))
 
-    def on_filtered_pressure(self, key, pressure):
-        self.set_label('filtered_pressure', self.format_pressure(pressure))
-
-        alt = self.vario.pressure_to_alt(pressure)
-        self.set_label("altitude", "%.2f m" % alt)
+    def on_filtered(self, key, altitude):
+        #self.set_label('filtered_pressure', self.format_pressure(pressure))
+        #alt = self.vario.pressure_to_alt(pressure)
+        self.set_label("altitude", "%.2f m" % altitude)
 
     def on_vario(self, key, vario):
         self.set_label("vario", "%s%.1f m/s" % (vario >= 0 and '↑' or '↓', abs(vario)))

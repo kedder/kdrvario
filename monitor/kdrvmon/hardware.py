@@ -19,6 +19,8 @@ class Hardware(EventSource):
         if key is None:
             return
 
+        if key in ('pressure', 'temperature'):
+            value = int(value)
         self.emit(key, value)
 
     def read_serial(self):

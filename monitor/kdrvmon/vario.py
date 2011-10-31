@@ -20,18 +20,18 @@ class Vario(EventSource):
     def on_pressure(self, key, pressure):
         self.pressure = pressure
         self.altitude = self.pressure_to_alt(pressure)
-
-        now = time()
-        self.history.append((now, self.altitude))
-        if len(self.history) > VARIO_LAG:
-            lastts, lastalt = self.history.popleft()
-            self.calculate_vario(lastts, lastalt, now, self.altitude)
+        self.emit("altitude", self.altitude)
+        #now = time()
+        #self.history.append((now, self.altitude))
+        #if len(self.history) > VARIO_LAG:
+        #    lastts, lastalt = self.history.popleft()
+        #    self.calculate_vario(lastts, lastalt, now, self.altitude)
 
     def pressure_to_alt(self, pressure):
         return 44330 * (1 - (pressure/STD_PRESSURE) ** (1/5.255))
 
-    def calculate_vario(self, lastts, lastalt, now, altitude):
-        timedelta = now - lastts
-        altdelta = altitude - lastalt
-        self.vario = altdelta / timedelta
-        self.emit("vario", self.vario)
+    #def calculate_vario(self, lastts, lastalt, now, altitude):
+    #    timedelta = now - lastts
+    #    altdelta = altitude - lastalt
+    #    self.vario = altdelta / timedelta
+    #    self.emit("vario", self.vario)

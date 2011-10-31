@@ -7,7 +7,7 @@ from collections import deque
 
 SAMPLE_SIZE = 300
 
-class PressureDataPlot(object):
+class DataPlot(object):
     canvas = None
     data_y = []
     data_x = []
@@ -28,10 +28,9 @@ class PressureDataPlot(object):
 
         self.canvas = FigureCanvas(self.f)
 
-    def on_pressure(self, key, value):
-        pressure = int(value)
+    def on_raw_data(self, key, value):
         self.data_y.popleft()
-        self.data_y.append(int(value))
+        self.data_y.append(value)
 
         self.data_x.popleft()
         self.data_x.append(self.data_x[-1] + 1)
@@ -43,11 +42,11 @@ class PressureDataPlot(object):
         # redraw the plot
         self.plot.set_xdata(self.data_x)
         self.plot.set_ydata(self.data_y)
-        self.ax.set_ybound(lower=dmin-20, upper=dmax+20)
+        self.ax.set_ybound(lower=dmin-2, upper=dmax+2)
         self.ax.set_xbound(lower=self.data_x[0], upper=self.data_x[-1])
         self.f.canvas.draw();
 
-    def on_filtered_pressure(self, key, value):
+    def on_filtered_data(self, key, value):
         self.filtered.popleft()
         self.filtered.append(value)
 
@@ -58,7 +57,7 @@ class PressureDataPlot(object):
     def get_canvas(self):
         return self.canvas
 
-class PressureDistributionPlot(object):
+class DistributionPlot(object):
     canvas = None
     data_y = []
     distr = None
@@ -81,9 +80,8 @@ class PressureDistributionPlot(object):
 
         self.canvas = FigureCanvas(self.f)
 
-    def on_pressure(self, key, value):
-        pressure = int(value)
-        self.data_y.append(pressure)
+    def on_raw_data(self, key, value):
+        self.data_y.append(value)
         if len(self.data_y) > 200:
             removed = self.data_y.popleft()
 
@@ -94,7 +92,7 @@ class PressureDistributionPlot(object):
         self.plot.set_ydata(ydata)
 
         ## calculate the boundaries
-        self.ax.set_xbound(lower=min(xdata) - 10, upper=max(xdata) + 10)
+        self.ax.set_xbound(lower=min(xdata) - 1, upper=max(xdata) + 1)
         step = 10
         self.ax.set_ybound(lower=0, upper=int(max(ydata) / step) * step + step)
 
