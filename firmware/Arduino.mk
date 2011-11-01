@@ -205,7 +205,7 @@ ECHO    = echo
 # General arguments
 SYS_LIBS      = $(patsubst %,$(ARDUINO_LIB_PATH)/%,$(ARDUINO_LIBS))
 SYS_INCLUDES  = $(patsubst %,-I%,$(SYS_LIBS))
-SYS_OBJS      = $(wildcard $(patsubst %,%/*.o,$(SYS_LIBS)))
+SYS_OBJS      = $(wildcard $(patsubst %,%/*.o,$(SYS_LIBS))) -lm
 LIB_SRC       = $(wildcard $(patsubst %,%/*.cpp,$(SYS_LIBS)))
 LIB_OBJS      = $(patsubst $(ARDUINO_LIB_PATH)/%.cpp,$(OBJDIR)/libs/%.o,$(LIB_SRC))
 
