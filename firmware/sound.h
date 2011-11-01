@@ -1,11 +1,8 @@
 #ifndef sound_h
 #define sound_h
 
-#include "vario.h"
-
 class Sound {
 	private:
-		Vario *_vario;
 		unsigned long _tonestart;
 		bool _silent;
 		bool _enabled;
@@ -13,10 +10,10 @@ class Sound {
 		int calc_pitch(int vspeed);
 		int calc_duration(int vspeed);
 	public:
-		Sound(Vario *vario);
+		Sound();
 		void start();
 		void stop();
-		void update();
+		void update(int vspeed);
 };
 
 #endif

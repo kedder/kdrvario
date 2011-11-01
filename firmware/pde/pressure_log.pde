@@ -5,12 +5,14 @@
 #include "vario.h"
 #include "filter.h"
 #include "atmosphere.h"
+#include "sound.h"
 
 #define LED 13
 
 BMP085 pressureSensor(3);
 AlphaBetaFilter filter(1.2923, 0.86411);
 Atmosphere atmosphere = Atmosphere();
+Sound sound = Sound();
 
 int cnt = 0;
 
@@ -28,6 +30,8 @@ void setup() {
 	log("setup", "Initialization completed.");
 
 	pinMode(LED, OUTPUT);
+
+	sound.start();
 }
 
 void loop() {
@@ -45,9 +49,12 @@ void loop() {
 	filter.filter(altitude);
 
 	log("filtered", filter.getPosition());
-	log("velocity", filter.getVelocity());
+	int velocity = filter.getVelocity();
+	log("velocity", velocity);
+
+	sound.update(velocity);
 	
-	delay(50);
+	delay(20);
 }
 
 // vim: ft=cpp

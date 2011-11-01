@@ -18,9 +18,10 @@
 #define MIN_PITCH 20
 #define ZERO_PITCH 220
 #define MAX_PITCH 1500
+#define SILENT_LOW -18
+#define SILENT_HIGH 18
 
-Sound::Sound(Vario *vario) {
-	_vario = vario;
+Sound::Sound() {
 	_silent = false;
 	_tonestart = 0;
 	_enabled = false;
@@ -73,11 +74,16 @@ void Sound::stop() {
 	noTone(SOUND_PIN);
 }
 
-void Sound::update() {
+void Sound::update(int vspeed) {
 	if (!_enabled) {
 		return;
 	}
-	int vspeed = _vario->get_vertical_speed();
+
+	if (vspeed >= SILENT_LOW && vspeed <= SILENT_HIGH) {
+		noTone(SOUND_PIN);
+		return;
+	}
+
 	int pitch = calc_pitch(vspeed);
     int duration = calc_duration(vspeed);
 
