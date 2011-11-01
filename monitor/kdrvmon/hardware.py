@@ -21,6 +21,8 @@ class Hardware(EventSource):
 
         if key in ('pressure', 'temperature'):
             value = int(value)
+        if key in ('altitude', 'filtered', 'velocity'):
+            value = float(value) / 100;
         self.emit(key, value)
 
     def read_serial(self):
