@@ -3,10 +3,14 @@
 #include "bmp085.h"
 #include "log.h"
 #include "vario.h"
+#include "filter.h"
+#include "atmosphere.h"
 
 #define LED 13
 
-BMP085 PressureSensor = BMP085(3);
+BMP085 pressureSensor(3);
+AlphaBetaFilter filter(1.2923, 0.86411);
+Atmosphere atmosphere = Atmosphere();
 
 int cnt = 0;
 
@@ -19,7 +23,7 @@ void setup() {
 	Wire.begin();
 
 	// initialize pressure sensor
-	PressureSensor.begin();
+	pressureSensor.begin();
 
 	log("setup", "Initialization completed.");
 
@@ -29,12 +33,21 @@ void setup() {
 void loop() {
 
 	if (cnt == 0) {
-		log("temp", PressureSensor.readTemperature());
+		log("temp", pressureSensor.readTemperature());
 		cnt = 4;
 	}
-	log("pressure", PressureSensor.readPressure());
+	long pressure = pressureSensor.readPressure();
+	log("pressure", pressure);
 	cnt--;
-	delay(30);
+
+	long altitude = atmosphere.pressureToAlt(pressure);
+	log("altitude", altitude);
+	filter.filter(altitude);
+
+	log("filtered", filter.getPosition());
+	log("velocity", filter.getVelocity());
+	
+	delay(50);
 }
 
 // vim: ft=cpp
