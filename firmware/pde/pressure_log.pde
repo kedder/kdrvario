@@ -6,13 +6,16 @@
 #include "filter.h"
 #include "atmosphere.h"
 #include "sound.h"
+#include "display.h"
 
-#define LED 13
 
 BMP085 pressureSensor(3);
-AlphaBetaFilter filter(1.2923, 0.86411);
+//AlphaBetaFilter filter(1.2923, 0.86411);
+AlphaBetaFilter filter(1.0, 0.5);
 Atmosphere atmosphere = Atmosphere();
 Sound sound = Sound();
+Display display = Display();
+
 
 int cnt = 0;
 
@@ -20,6 +23,8 @@ void setup() {
 	// initialize serial interface
 	Serial.begin(57600);
 	log("setup", "Initializing...");
+
+	display.begin();
 
 	// initialize I2C interface
 	Wire.begin();
@@ -29,31 +34,35 @@ void setup() {
 
 	log("setup", "Initialization completed.");
 
-	pinMode(LED, OUTPUT);
-
 	sound.start();
 }
 
 void loop() {
 
 	if (cnt == 0) {
-		log("temp", pressureSensor.readTemperature());
+		long temp = pressureSensor.readTemperature();
+		//log("temp", pressureSensor.readTemperature());
+		display.showTemperature(temp);
+		log("temp", temp);
 		cnt = 4;
 	}
 	long pressure = pressureSensor.readPressure();
-	log("pressure", pressure);
 	cnt--;
 
 	long altitude = atmosphere.pressureToAlt(pressure);
-	log("altitude", altitude);
 	filter.filter(altitude);
 
-	log("filtered", filter.getPosition());
 	int velocity = filter.getVelocity();
-	log("velocity", velocity);
 
 	sound.update(velocity);
+
+	display.showAlititude(filter.getPosition());
+	display.showVSpeed(velocity);
 	
+	log("pressure", pressure);
+	log("altitude", altitude);
+	log("filtered", filter.getPosition());
+	log("velocity", velocity);
 	delay(20);
 }
 

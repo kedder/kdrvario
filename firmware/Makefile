@@ -2,7 +2,7 @@ ARDUINO_DIR  = /usr/share/arduino
 AVR_TOOLS_PATH    = /usr/bin
 
 TARGET       = kdrvario
-ARDUINO_LIBS = Wire
+ARDUINO_LIBS = Wire LiquidCrystal
 
 MCU          = atmega328p
 F_CPU        = 16000000
