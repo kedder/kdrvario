@@ -82,15 +82,16 @@ class Gui(object):
 
         self.set_label('raw_pressure', self.format_pressure(raw_pressure))
 
+    def on_filtered(self, key, altitude):
+        #self.set_label('filtered_pressure', self.format_pressure(pressure))
+        #alt = self.vario.pressure_to_alt(pressure)
+        self.set_label("altitude", "%.2f m" % altitude)
+
         self.datarate.tick()
         if self.datarate.rate:
             lbl = self.builder.get_object('datarate')
             lbl.set_text("%.2f Hz" % (self.datarate.rate))
 
-    def on_filtered(self, key, altitude):
-        #self.set_label('filtered_pressure', self.format_pressure(pressure))
-        #alt = self.vario.pressure_to_alt(pressure)
-        self.set_label("altitude", "%.2f m" % altitude)
 
     def on_altitude(self, key, altitude):
         self.set_label('raw_altitude', "%.2fm" % altitude)

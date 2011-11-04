@@ -1,3 +1,4 @@
+from time import time
 from numpy import *
 
 from matplotlib.figure import Figure
@@ -5,7 +6,7 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 
 from collections import deque
 
-SAMPLE_SIZE = 300
+SAMPLE_SIZE = 400
 
 class DataPlot(object):
     canvas = None
@@ -15,6 +16,7 @@ class DataPlot(object):
     ax = None
     plot = None
     f = None
+    lastredraw = None
 
     def __init__(self):
         self.data_y = deque([None] * SAMPLE_SIZE)
@@ -44,7 +46,7 @@ class DataPlot(object):
         self.plot.set_ydata(self.data_y)
         self.ax.set_ybound(lower=dmin-2, upper=dmax+2)
         self.ax.set_xbound(lower=self.data_x[0], upper=self.data_x[-1])
-        self.f.canvas.draw();
+        # self.f.canvas.draw();
 
     def on_filtered_data(self, key, value):
         self.filtered.popleft()
@@ -52,7 +54,19 @@ class DataPlot(object):
 
         self.fplot.set_xdata(self.data_x)
         self.fplot.set_ydata(self.filtered)
-        self.f.canvas.draw();
+
+        self.redraw()
+
+    def redraw(self):
+        now = time()
+        if not self.lastredraw:
+            self.lastredraw = now;
+            return;
+
+        dt = now - self.lastredraw
+        if dt > 1.0/20:
+            self.f.canvas.draw();
+            self.lastredraw = now
 
     def get_canvas(self):
         return self.canvas
