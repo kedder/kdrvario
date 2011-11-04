@@ -10,7 +10,8 @@
 
 BMP085 pressureSensor(3);
 //AlphaBetaFilter filter(1.2923, 0.86411);
-AlphaBetaFilter filter(1.0, 0.5);
+//welf.
+AlphaBetaFilter filter(1.7, 1.7);
 Atmosphere atmosphere = Atmosphere();
 Sound sound = Sound();
 Display display = Display();
@@ -41,7 +42,7 @@ void loop() {
 		long temp = pressureSensor.readTemperature();
 		display.showTemperature(temp);
 		log("temp", temp);
-		cnt = 4;
+		cnt = 2000;
 	}
 	cnt--;
 
@@ -57,11 +58,11 @@ void loop() {
 	display.showAlititude(filter.getPosition());
 	display.showVSpeed(velocity);
 	
-	log("pressure", pressure);
+	//log("pressure", pressure);
 	log("altitude", altitude);
 	log("filtered", filter.getPosition());
 	log("velocity", velocity);
-	delay(20);
+	//delay(10);
 }
 
 // vim: ft=cpp
