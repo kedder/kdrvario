@@ -2,7 +2,6 @@
 
 #include "bmp085.h"
 #include "log.h"
-#include "vario.h"
 #include "filter.h"
 #include "atmosphere.h"
 #include "sound.h"

@@ -1,6 +1,5 @@
 #include <WProgram.h>
 
-#include "vario.h"
 #include "sound.h"
 #include "log.h"
 //#include "wiring.h"
