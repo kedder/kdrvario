@@ -28,16 +28,16 @@ void AlphaBetaFilter::filter(long value) {
 	float a = _alpha * dt;
 	float b = _beta * dt * dt;
 
-	long pos = _position + _velocity * dt;
-	int vel = _velocity;
+	float pos = _position + _velocity * dt;
+	float vel = _velocity;
 
-	long r = value - pos;
+	float r = value - pos;
 
 	pos += a * r;
 	vel += b * r/dt;
 
-	_position = pos;
-	_velocity = vel;
+	_position = round(pos);
+	_velocity = round(vel);
 }
 
 long AlphaBetaFilter::getPosition() {

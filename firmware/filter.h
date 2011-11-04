@@ -5,7 +5,7 @@ class AlphaBetaFilter {
 	private:
 		float _alpha;
 		float _beta;
-		float _lastts;
+		unsigned long _lastts;
 
 		long _position;
 		int _velocity;

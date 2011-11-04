@@ -37,16 +37,15 @@ void setup() {
 }
 
 void loop() {
-
 	if (cnt == 0) {
 		long temp = pressureSensor.readTemperature();
-		//log("temp", pressureSensor.readTemperature());
 		display.showTemperature(temp);
 		log("temp", temp);
 		cnt = 4;
 	}
-	long pressure = pressureSensor.readPressure();
 	cnt--;
+
+	long pressure = pressureSensor.readPressure();
 
 	long altitude = atmosphere.pressureToAlt(pressure);
 	filter.filter(altitude);
