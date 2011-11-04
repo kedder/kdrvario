@@ -36,8 +36,8 @@ void AlphaBetaFilter::filter(long value) {
 	pos += a * r;
 	vel += b * r/dt;
 
-	_position = round(pos);
-	_velocity = round(vel);
+	_position = pos;
+	_velocity = vel;
 }
 
 long AlphaBetaFilter::getPosition() {

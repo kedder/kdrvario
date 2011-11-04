@@ -7,8 +7,8 @@ class AlphaBetaFilter {
 		float _beta;
 		unsigned long _lastts;
 
-		long _position;
-		int _velocity;
+		float _position;
+		float _velocity;
 		bool _initialized;
 
 	public:
