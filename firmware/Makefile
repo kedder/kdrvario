@@ -35,11 +35,17 @@ $(TARGET_ELF): 	$(OBJS)
 		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS)
 
 # firmware switch targets
-fw_switch_pressure_log: clean
+fw_switch_pressure_log: total_clean
 	ln -sf pde/pressure_log.pde firmware.pde
 
-fw_switch_sound_check: clean
+fw_switch_sound_check: total_clean
 	ln -sf pde/sound_check.pde firmware.pde
 
-fw_switch_stats: clean
+fw_switch_stats: total_clean
 	ln -sf pde/stats.pde firmware.pde
+
+fw_switch_rencoder: total_clean
+	ln -sf pde/rencoder.pde firmware.pde
+
+total_clean:
+	rm -rf build-cli
