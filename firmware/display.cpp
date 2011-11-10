@@ -1,7 +1,7 @@
 #include <LiquidCrystal.h>
 #include "display.h"
 
-LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+LiquidCrystal lcd(7, 6, 5, 4, 9, 8);
 
 void Display::begin() {
 	lcd.begin(16, 2);
