@@ -87,14 +87,14 @@ class Gui(object):
         #alt = self.vario.pressure_to_alt(pressure)
         self.set_label("altitude", "%.2f m" % altitude)
 
+    def on_altitude(self, key, altitude):
+        self.set_label('raw_altitude', "%.2fm" % altitude)
+
         self.datarate.tick()
         if self.datarate.rate:
             lbl = self.builder.get_object('datarate')
             lbl.set_text("%.2f Hz" % (self.datarate.rate))
 
-
-    def on_altitude(self, key, altitude):
-        self.set_label('raw_altitude', "%.2fm" % altitude)
 
     def on_vario(self, key, vario):
         self.set_label("vario", "%s%.1f m/s" % (vario >= 0 and '↑' or '↓', abs(vario)))

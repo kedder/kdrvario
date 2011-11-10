@@ -47,6 +47,7 @@ class DataPlot(object):
         self.ax.set_ybound(lower=dmin-2, upper=dmax+2)
         self.ax.set_xbound(lower=self.data_x[0], upper=self.data_x[-1])
         # self.f.canvas.draw();
+        self.redraw()
 
     def on_filtered_data(self, key, value):
         self.filtered.popleft()
