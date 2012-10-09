@@ -17,6 +17,8 @@ def log(serial, out):
 
     while True:
         rec = serial.next()
+        if not rec:
+            continue
 
         # skip records until hw initialized
         if "Initialization completed." in rec:
@@ -45,17 +47,17 @@ def print_stats():
     print "Data rate: %.2f" % (1/rate)
 
 def main():
-    if len(sys.argv) != 2:
-        print "Error! Provide file name to log to."
-        return
-
-    fname = sys.argv[1]
 
     print "KDRVario logger"
     print
 
-    out = file(fname, "w")
-    print "Logging serial output to %s" % fname
+    if len(sys.argv) != 2:
+        out = sys.stdout
+        print "Logging to standard output"
+    else:
+        fname = sys.argv[1]
+        out = file(fname, "w")
+        print "Logging serial output to %s" % fname
 
     serial = SerialDataFeed('/dev/ttyACM0', 57600);
     serial.open()

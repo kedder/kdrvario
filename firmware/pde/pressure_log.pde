@@ -23,12 +23,13 @@
 #include "atmosphere.h"
 #include "sound.h"
 #include "display.h"
+#include "keyboard.h"
 
 
-BMP085 pressureSensor(3);
+BMP085 pressureSensor(0);
 //AlphaBetaFilter filter(1.2923, 0.86411);
 //welf.
-AlphaBetaFilter filter(1.4, 1.0);
+AlphaBetaFilter filter(1.0, 1.0);
 Atmosphere atmosphere = Atmosphere();
 Sound sound = Sound();
 Display display = Display();
@@ -48,10 +49,11 @@ void setup() {
 
 	// initialize pressure sensor
 	pressureSensor.begin();
+	sound.start();
+	keyboard.begin();
 
 	log("setup", "Initialization completed.");
 
-	sound.start();
 }
 
 void loop() {
@@ -75,6 +77,12 @@ void loop() {
 
 	display.showAlititude(filter.getPosition());
 	display.showVSpeed(velocity);
+
+	keyboard.poll();
+	uint8_t key = keyboard.read();
+	if (key) {
+		log("key", key);
+	}
 	
 	//log("pressure", pressure);
 	log("altitude", altitude);

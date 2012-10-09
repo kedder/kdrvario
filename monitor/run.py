@@ -11,7 +11,7 @@ def main():
         feed = SerialDataFeed(SERIAL_PORT, SERIAL_RATE)
     else:
         feed = FileDataFeed(sys.argv[1])
-        feed.realtime = False
+        #feed.realtime = False
 
     gui = Gui(feed)
     gui.run()
