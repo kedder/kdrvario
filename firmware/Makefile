@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 ARDUINO_DIR  = /usr/share/arduino
 AVR_TOOLS_PATH    = /usr/bin
 
@@ -18,7 +19,7 @@ include Arduino.mk
 
 SYS_INCLUDES := -I$(ARDUINO_LIB_PATH)/Wire/utility/ $(SYS_INCLUDES)
 LIB_SRC := $(ARDUINO_LIB_PATH)/Wire/utility/twi.c $(LIB_SRC)
-LIB_OBJS := $(patsubst $(ARDUINO_LIB_PATH)/%.c,$(OBJDIR)/libs/%.o,$(LIB_OBJS))
+LIB_OBJS := $(OBJDIR)/libs/Wire/utility/twi.o $(LIB_OBJS)
 
 $(OBJDIR)/libs/%.o: $(ARDUINO_LIB_PATH)/%.c
 	mkdir -p $(dir $@)
@@ -32,7 +33,7 @@ debug:
 	echo TARGET_ELF $(TARGET_ELF)
 
 $(TARGET_ELF): 	$(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS)
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(SYS_OBJS) -lc
 
 # firmware switch targets
 fw_switch_pressure_log: total_clean

@@ -19,7 +19,7 @@
  * Support for Bosch BMP085 barometric pressure sensor
  */
 #include <Wire.h>
-#include "WProgram.h"
+#include <Arduino.h>
 
 #include "bmp085.h"
 
@@ -73,8 +73,8 @@ unsigned int BMP085::readUncompensatedTemperature() {
 	// Write 0x2E into Register 0xF4
 	// This requests a temperature reading
 	Wire.beginTransmission(BMP085_ADDRESS);
-	Wire.send(0xF4);
-	Wire.send(0x2E);
+	Wire.write(0xF4);
+	Wire.write(0x2E);
 	Wire.endTransmission();
 
 	// Wait at least 4.5ms
@@ -123,8 +123,8 @@ unsigned long BMP085::readUncompensatedPressure() {
 	// Write 0x34+(_mode<<6) into register 0xF4
 	// Request a pressure reading w/ oversampling setting
 	Wire.beginTransmission(BMP085_ADDRESS);
-	Wire.send(0xF4);
-	Wire.send(0x34 + (_mode<<6));
+	Wire.write(0xF4);
+	Wire.write(0x34 + (_mode<<6));
 	Wire.endTransmission();
 
 	// Wait for conversion, delay time dependent on _mode
@@ -132,16 +132,16 @@ unsigned long BMP085::readUncompensatedPressure() {
 
 	// Read register 0xF6 (MSB), 0xF7 (LSB), and 0xF8 (XLSB)
 	Wire.beginTransmission(BMP085_ADDRESS);
-	Wire.send(0xF6);
+	Wire.write(0xF6);
 	Wire.endTransmission();
 	Wire.requestFrom(BMP085_ADDRESS, 3);
 
 	// Wait for data to become available
 	while(Wire.available() < 3)
 		;
-	msb = Wire.receive();
-	lsb = Wire.receive();
-	xlsb = Wire.receive();
+	msb = Wire.read();
+	lsb = Wire.read();
+	xlsb = Wire.read();
 
 	up = (((unsigned long) msb << 16) | ((unsigned long) lsb << 8) | (unsigned long) xlsb) >> (8-_mode);
 
@@ -156,14 +156,14 @@ int BMP085::readInt(unsigned char address) {
 	unsigned char msb, lsb;
 
 	Wire.beginTransmission(BMP085_ADDRESS);
-	Wire.send(address);
+	Wire.write(address);
 	Wire.endTransmission();
 
 	Wire.requestFrom(BMP085_ADDRESS, 2);
 	while(Wire.available()<2) {
 	}
-	msb = Wire.receive();
-	lsb = Wire.receive();
+	msb = Wire.read();
+	lsb = Wire.read();
 
 	return (int) msb<<8 | lsb;
 }

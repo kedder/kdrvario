@@ -18,7 +18,6 @@
 #ifndef keyboard_h
 #define keyboard_h
 
-#include "wiring.h"
 
 #define KEYBOARD_BUFFER_SIZE 16
 
